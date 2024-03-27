@@ -3,6 +3,9 @@ const router = express.Router();
 const CustomersService = require('../services/clientes.service');
 const service = new CustomersService();
 
+const passport = require('passport');
+const { checkRoles } = require('../middlewares/auth.handler');
+
 const validatorHandler = require('../middlewares/validator.handler');
 const {
   createCustomersSchema,
@@ -35,6 +38,8 @@ router.get(
 
 router.post(
   '/',
+  passport.authenticate('jwt', { session: false }),
+  checkRoles('user', 'admin'),
   validatorHandler(createCustomersSchema, 'body'),
   async (req, res, next) => {
     try {

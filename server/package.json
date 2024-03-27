@@ -9,6 +9,7 @@
     "start": "node index.js",
     "migrations:generate": "sequelize-cli migration:generate --name",
     "migrations:run": "sequelize-cli db:migrate",
+    "migrations:runspecific": "sequelize-cli db:migrate --name",
     "migrations:revert": "sequelize-cli db:migrate:undo",
     "migrations:revert-single": "sequelize-cli db:migrate:undo --name <nombre_de_tu_migracion>",
     "migrations:delete": "sequelize-cli db:migrate:undo:all",
@@ -26,15 +27,23 @@
   "dependencies": {
     "@faker-js/faker": "^8.3.1",
     "@hapi/boom": "^10.0.1",
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
+    "date-fns": "^3.3.1",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "joi": "^17.11.0",
+    "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.6.5",
+    "passport": "^0.7.0",
+    "passport-google-oauth": "^2.0.0",
+    "passport-jwt": "^4.0.1",
+    "passport-local": "^1.0.0",
     "pg": "^8.11.3",
     "pg-hstore": "^2.3.4",
     "pg-promise": "^11.5.4",
     "sequelize": "^6.35.1",
-    "sequelize-cli": "^6.6.2"
+    "sequelize-cli": "^6.6.2",
+    "ws": "^8.16.0"
   }
 }

@@ -1,7 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const WorkerService = require('../services/trabajadores.service');
-const service = new WorkerService();
+
+const { models } = require('../lib/sequelize');
+
+const payrollService = require('../services/proyectos.service');
+const service = new payrollService();
+
 const passport = require('passport');
 const validatorHandler = require('../middlewares/validator.handler');
 const { checkRoles } = require('../middlewares/auth.handler');
@@ -9,22 +13,22 @@ const {
   createWorkerSchema,
   getWorkerSchema,
   updateWorkerSchema,
-  createWorkerCostSchema,
 } = require('../schemas/trabajadores.schema');
+const PayrollService = require('../services/payrolls.service');
 
 router.get('/', async (req, res, next) => {
   try {
-    const workers = await service.find();
+    const workers = await service.findPayrolls();
     res.json(workers);
   } catch (error) {
     next(error);
   }
 });
 
-router.get('/WorkerCosts', async (req, res, next) => {
+router.get('/payrollsWeek', async (req, res, next) => {
   try {
-    const workers = await service.findWorkerCost();
-    res.json(workers);
+    const payrolls = await service.findPayrollsWeeks();
+    res.json(payrolls);
   } catch (error) {
     next(error);
   }
@@ -44,35 +48,15 @@ router.get(
   },
 );
 
-router.post(
-  '/',
-
-  validatorHandler(createWorkerSchema, 'body'),
-  async (req, res, next) => {
-    try {
-      const body = req.body;
-      const newWorker = await service.create(body);
-      res.status(201).json(newWorker);
-    } catch (error) {
-      next(error);
-    }
-  },
-);
-
-router.post(
-  '/WorkerCosts',
-
-  validatorHandler(createWorkerCostSchema, 'body'),
-  async (req, res, next) => {
-    try {
-      const body = req.body;
-      const newWorker = await service.createWorkerCost(body);
-      res.status(201).json(newWorker);
-    } catch (error) {
-      next(error);
-    }
-  },
-);
+router.post('/', async (req, res, next) => {
+  try {
+    const body = req.body;
+    const newPayroll = await service.createPayroll(body);
+    res.status(201).json(newPayroll);
+  } catch (error) {
+    next(error);
+  }
+});
 
 router.patch(
   '/:id',
@@ -101,20 +85,6 @@ router.delete(
     try {
       const { id } = req.params;
       await service.delete(id);
-      res.status(201).json({ id });
-    } catch (error) {
-      next(error);
-    }
-  },
-);
-
-router.delete(
-  '/WorkerCosts/:id',
-  validatorHandler(getWorkerSchema, 'params'),
-  async (req, res, next) => {
-    try {
-      const { id } = req.params;
-      await service.deleteProjectWorker(id);
       res.status(201).json({ id });
     } catch (error) {
       next(error);

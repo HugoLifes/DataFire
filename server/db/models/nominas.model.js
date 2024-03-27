@@ -1,10 +1,10 @@
 const { Model, DataTypes, Sequelize } = require('sequelize');
-
 const { PROJECT_TABLE } = require('./proyectos.model');
+const { WORKER_TABLE } = require('./trabajadores.model');
 
-const SERVICES_TABLE = 'services';
+const NOMINA_TABLE = 'Nominas';
 
-const ServiceSchema = {
+const NominaSchema = {
   id: {
     allowNull: false,
     autoIncrement: true,
@@ -12,7 +12,6 @@ const ServiceSchema = {
     type: DataTypes.INTEGER,
   },
   project_id: {
-    field: 'project_id',
     allowNull: false,
     type: DataTypes.INTEGER,
     references: {
@@ -20,24 +19,28 @@ const ServiceSchema = {
       key: 'id',
     },
     onUpdate: 'CASCADE',
-    onDelete: 'SET NULL',
+    onDelete: 'CASCADE',
   },
-  amount: {
+  worker_id: {
+    allowNull: false,
+    type: DataTypes.INTEGER,
+    references: {
+      model: WORKER_TABLE,
+      key: 'id',
+    },
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+  },
+  amount_paid: {
     allowNull: false,
     type: DataTypes.INTEGER,
   },
-  service: {
-    allowNull: false,
-    type: DataTypes.STRING,
-  },
-  cost: {
+  weeks_worked: {
     allowNull: false,
     type: DataTypes.INTEGER,
   },
-  fecha_costo: {
-    allowNull: true,
-    type: DataTypes.DATE,
-    default: '2019-01-12T08:28:24.762Z',
+  payment_dates: {
+    type: DataTypes.ARRAY(DataTypes.DATE),
   },
   createdAt: {
     allowNull: false,
@@ -47,12 +50,18 @@ const ServiceSchema = {
   },
 };
 
-class Service extends Model {
+class Nomina extends Model {
   static associate(models) {
     this.belongsTo(models.Project, {
       foreignKey: 'project_id',
       as: 'project',
-      onDelete: 'SET NULL',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    });
+    this.belongsTo(models.Worker, {
+      foreignKey: 'worker_id',
+      as: 'worker',  // This should match the alias used in your include in the service
+      onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     });
   }
@@ -60,15 +69,15 @@ class Service extends Model {
   static config(sequelize) {
     return {
       sequelize,
-      tableName: SERVICES_TABLE,
-      modelName: 'Service',
+      tableName: NOMINA_TABLE,
+      modelName: 'Nomina',
       timestamps: false,
     };
   }
 }
 
 module.exports = {
-  SERVICES_TABLE,
-  ServiceSchema,
-  Service,
+  NOMINA_TABLE,
+  NominaSchema,
+  Nomina,
 };
